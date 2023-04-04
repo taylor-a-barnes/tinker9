@@ -3,8 +3,8 @@
 # support cross-compilation and ninja-build
 include(ExternalProject)
 ExternalProject_Add(mdi_build
-  URL     "https://github.com/MolSSI-MDI/MDI_Library/archive/v1.2.9.tar.gz"
-  URL_MD5 "ddfa46d6ee15b4e59cfd527ec7212184"
+  URL     "https://github.com/MolSSI-MDI/MDI_Library/archive/v1.4.16.tar.gz"
+  URL_MD5 "407db44e2d79447ab5c1233af1965f65"
   CMAKE_ARGS ${CMAKE_REQUEST_PIC}
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -19,7 +19,6 @@ ExternalProject_Add(mdi_build
   INSTALL_COMMAND ""
   BUILD_BYPRODUCTS "<BINARY_DIR>/MDI_Library/libmdi.a"
   )
-#  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
 
 # where is the compiled library?
 ExternalProject_get_property(mdi_build BINARY_DIR)
@@ -36,3 +35,4 @@ set_target_properties(mdi-lib PROPERTIES
   )
 
 target_link_libraries(tinker9 mdi-lib)
+target_include_directories (tinkerObjCpp PUBLIC "${MDI_BINARY_DIR}")

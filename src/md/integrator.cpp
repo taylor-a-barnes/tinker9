@@ -9,6 +9,7 @@
 #include <tinker/detail/inform.hh>
 #include <tinker/detail/mdstuf.hh>
 #include <tinker/detail/units.hh>
+#include "mdi.h"
 
 namespace tinker {
 void BasicIntegrator::plan(int istep)
