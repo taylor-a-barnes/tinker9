@@ -671,5 +671,13 @@ add_custom_target (test
 )
 
 
+## MDI support
+option(MDI "MDI build flag" OFF)
+if(MDI)
+  enable_language (C)
+  include(MDI)
+endif(MDI)
+
+
 ## documentations
 include (docs) # docs.cmake
