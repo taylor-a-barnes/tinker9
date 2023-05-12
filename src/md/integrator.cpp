@@ -10,7 +10,7 @@
 #include <tinker/detail/mdstuf.hh>
 #include <tinker/detail/units.hh>
 #include "mdi.h"
-#include "md/mdi.h"
+#include "md/mdiengine.h"
 
 namespace tinker {
 void BasicIntegrator::plan(int istep)

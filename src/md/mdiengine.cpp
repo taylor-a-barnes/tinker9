@@ -1,4 +1,4 @@
-#include "md/mdi.h"
+#include "md/mdiengine.h"
 #include "md/integrator.h"
 #include "ff/energy.h"
 #include "md/lflpiston.h"
