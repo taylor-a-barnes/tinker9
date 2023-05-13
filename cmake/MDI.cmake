@@ -36,4 +36,5 @@ set_target_properties(mdi-lib PROPERTIES
   )
 
 target_link_libraries(tinker9 mdi-lib ${CMAKE_DL_LIBS})
+target_link_libraries(tinkerObjCpp mdi-lib ${CMAKE_DL_LIBS})
 target_include_directories (tinkerObjCpp PUBLIC "${MDI_BINARY_DIR}")

@@ -69,6 +69,9 @@ void BasicIntegrator::printDetail(FILE* o)
    print(o, " %s\n", this->name());
 
    MDIEngine::initialize(o);
+
+   MDIEngine::mdiprint("CALLING RUN_MDI\n");
+   MDIEngine::run_mdi();
 }
 
 void BasicIntegrator::dynamic(int istep, time_prec dt)

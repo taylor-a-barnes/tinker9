@@ -676,7 +676,6 @@ option(MDI "MDI build flag" OFF)
 if(MDI)
   enable_language (C)
   include(MDI)
-  add_definitions(-DUSE_MDI)
 endif(MDI)
 
 
