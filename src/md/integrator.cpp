@@ -10,7 +10,7 @@
 #include <tinker/detail/mdstuf.hh>
 #include <tinker/detail/units.hh>
 #include "mdi.h"
-#include "md/mdi.h"
+#include "md/mdiengine.h"
 
 namespace tinker {
 void BasicIntegrator::plan(int istep)
@@ -69,6 +69,9 @@ void BasicIntegrator::printDetail(FILE* o)
    print(o, " %s\n", this->name());
 
    MDIEngine::initialize(o);
+
+   MDIEngine::mdiprint("CALLING RUN_MDI\n");
+   MDIEngine::run_mdi();
 }
 
 void BasicIntegrator::dynamic(int istep, time_prec dt)
