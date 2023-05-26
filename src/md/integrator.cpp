@@ -15,6 +15,7 @@
 namespace tinker {
 void BasicIntegrator::plan(int istep)
 {
+   
    int vers0 = rc_flag & calc::vmask;
    vers1 = vers0;
 
@@ -49,6 +50,7 @@ BasicIntegrator::BasicIntegrator()
    , m_thermo(new BasicThermostat)
    , m_baro(new BasicBarostat)
 {
+
    this->plan(0);
 }
 
@@ -70,8 +72,11 @@ void BasicIntegrator::printDetail(FILE* o)
 
    MDIEngine::initialize(o);
 
+   MDIEngine::run_mdi("@DEFAULT");
+   MDIEngine::run_mdi("@INIT_MD");
+
    MDIEngine::mdiprint("CALLING RUN_MDI\n");
-   MDIEngine::run_mdi();
+   //MDIEngine::run_mdi();
 }
 
 void BasicIntegrator::dynamic(int istep, time_prec dt)
@@ -96,6 +101,7 @@ void BasicIntegrator::dynamic(int istep, time_prec dt)
       m_prop->pos(dt);
       m_prop->rattle(dt);
       copyPosToXyz(true);
+      MDIEngine::run_mdi("@COORDS");
       energy(vers1);
       if (vers1 & calc::virial)
          if (not atomic)
@@ -124,6 +130,7 @@ void BasicIntegrator::dynamic(int istep, time_prec dt)
       m_prop->pos(dta);
       m_prop->rattle(dt);
       copyPosToXyz(true);
+      MDIEngine::run_mdi("@COORDS");
 
       // fast force
       energy(vers1, RESPA_FAST, respaTSConfig());
@@ -159,6 +166,7 @@ void BasicIntegrator::dynamic(int istep, time_prec dt)
                hc_vir[iv] += vir_fast[iv] / nrespa;
          }
       }
+      MDIEngine::run_mdi("@FORCES");
    }
 
    m_baro->control4(dt);
