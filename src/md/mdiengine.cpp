@@ -18,7 +18,7 @@ namespace tinker {
 std::FILE* MDIEngine::outputFile;
 MDI_Comm MDIEngine::mdi_comm;
 bool MDIEngine::exit_flag = false;
-//int target_node = 0;
+int MDIEngine::target_node = 0;
 
 void MDIEngine::initialize(std::FILE* o)
 {
@@ -75,10 +75,10 @@ void MDIEngine::run_mdi(const char* node)
   if (not is_initialized) { return; }
 
 
-  // if (target_node)  {
-  //   if ((target_node == 1) && ( strcmp(node, "@COORDS") == 0)) return;
-  //   if ((target_node == 2) && ( strcmp(node, "@FORCES") == 0)) return;
-  // }
+  if (target_node)  {
+    if ((target_node == 1) && ( strcmp(node, "@COORDS") == 0)) return;
+    if ((target_node == 2) && ( strcmp(node, "@FORCES") == 0)) return;
+  }
 
 
   /* MDI command from the driver */
@@ -103,17 +103,17 @@ void MDIEngine::run_mdi(const char* node)
       ret = MDI_Send(node, MDI_NAME_LENGTH, MDI_CHAR, mdi_comm);
     }
     else if ( strcmp(command, "<NATOMS") == 0 ) {
-      //ret = MDI_Send(n, 1, MDI_INT, mdi_comm);
+      ret = MDI_Send(&n, 1, MDI_INT, mdi_comm);
     }
     else if ( strcmp(command, "@INIT_MD") == 0 ) {
       break;
     }
     else if ( strcmp(command, "@COORDS") == 0 ) {
-      //target_node = 1;
+      target_node = 1;
       break;
     }
     else if ( strcmp(command, "@FORCES") == 0 ) {
-      //target_node = 2;
+      target_node = 2;
       break;
     }
     else {
