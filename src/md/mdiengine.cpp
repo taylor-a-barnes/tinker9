@@ -19,6 +19,7 @@ std::FILE* MDIEngine::outputFile;
 MDI_Comm MDIEngine::mdi_comm;
 bool MDIEngine::exit_flag = false;
 int MDIEngine::target_node = 0;
+double MDIEngine::bohrA_conv = 0.529177249;
 
 void MDIEngine::initialize(std::FILE* o)
 {
@@ -148,15 +149,14 @@ void MDIEngine::run_mdi(const char* node)
       ret = MDI_Recv(mass, n, MDI_DOUBLE, mdi_comm);
     }
     else if ( strcmp(command, "<PE") == 0 ) {
-      ret = MDI_Recv(esum, n, MDI_DOUBLE, mdi_comm);
+      ret = MDI_Recv(&esum, n, MDI_DOUBLE, mdi_comm);
     }
     else if ( strcmp(command, "<KE") == 0 ) {
-      ret = MDI_Recv(eksum, n, MDI_DOUBLE, mdi_comm);
+      ret = MDI_Recv(&eksum, n, MDI_DOUBLE, mdi_comm);
     }
     else if ( strcmp(command, "<ENERGY") == 0 ) {
-      double energy[n];
-      for (int i=0; i<n ; i++)  energy[i]= esum[i] + eksum [i];
-      ret = MDI_Recv(energy, n, MDI_DOUBLE, mdi_comm);
+      double energy = esum + eksum;
+      ret = MDI_Recv(&energy, 1, MDI_DOUBLE, mdi_comm);
     }
     else if ( strcmp(command, "@INIT_MD") == 0 ) {
       break;
