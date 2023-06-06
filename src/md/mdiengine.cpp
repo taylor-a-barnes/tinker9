@@ -50,18 +50,21 @@ void MDIEngine::mdi_commands()
   MDI_Register_command("@INIT_MD", "@");
   MDI_Register_command("@INIT_MD", "@COORDS");
   MDI_Register_command("@INIT_MD", "@FORCES");
+  MDI_Register_command("@INIT_MD", "<NATOMS");
 
   MDI_Register_node("@COORDS");
   MDI_Register_command("@COORDS", "<@");
   MDI_Register_command("@COORDS", "@");
   MDI_Register_command("@COORDS", "@COORDS");
   MDI_Register_command("@COORDS", "@FORCES");
+  MDI_Register_command("@COORDS", "<NATOMS");
 
   MDI_Register_node("@FORCES");
   MDI_Register_command("@FORCES", "<@");
   MDI_Register_command("@FORCES", "@");
   MDI_Register_command("@FORCES", "@COORDS");
   MDI_Register_command("@FORCES", "@FORCES");
+  MDI_Register_command("@FORCES", "<NATOMS");
 }
 
 void MDIEngine::run_mdi(const char* node)
@@ -105,6 +108,56 @@ void MDIEngine::run_mdi(const char* node)
     else if ( strcmp(command, "<NATOMS") == 0 ) {
       ret = MDI_Send(&n, 1, MDI_INT, mdi_comm);
     }
+    else if ( strcmp(command, "<COORDS") == 0 ) {
+      double coords[n*3];
+      for (int i=0; i<n ; i++)  {
+        coords[3*i]= x[i] / bohrA_conv;
+        coords[3*i + 1]= y[i] / bohrA_conv;
+        coords[3*i + 2]= z[i] / bohrA_conv;
+      }
+      // units should be in Bohr not Angstroms, 1.22something
+      ret = MDI_Send(coords, n * 3, MDI_DOUBLE, mdi_comm);
+    }
+    else if ( strcmp(command, ">COORDS") == 0 ) {
+      double recv_buffer[n*3];
+      ret = MDI_Recv(recv_buffer, n * 3, MDI_DOUBLE, mdi_comm);
+      for (int i=0; i<n ; i++)  {
+        mdiprint("%f\n",x[i]);
+        x[i]=recv_buffer[3*i] * bohrA_conv;
+        y[i]=recv_buffer[3*i + 1] * bohrA_conv;
+        z[i]=recv_buffer[3*i + 2] * bohrA_conv;
+      }
+      // units converted back into angstroms frpm Bohr
+    }
+    else if ( strcmp(command, "<FORCES") == 0 ) {
+      double forces[n*3];
+
+      
+      for (int i=0; i<n ; i++)  {
+        forces[3*i]= - gx[i];
+        forces[3*i + 1]= - gy[i];
+        forces[3*i + 2]= - gz[i];
+      }
+      // units should be in atomic units. (something/angstrom)
+      ret = MDI_Send(forces, n * 3, MDI_DOUBLE, mdi_comm);
+    }
+    else if ( strcmp(command, "<MASSES") == 0 ) {
+      ret = MDI_Send(mass, n, MDI_DOUBLE, mdi_comm);
+    }
+    else if ( strcmp(command, ">MASSES") == 0 ) {
+      ret = MDI_Recv(mass, n, MDI_DOUBLE, mdi_comm);
+    }
+    else if ( strcmp(command, "<PE") == 0 ) {
+      ret = MDI_Recv(esum, n, MDI_DOUBLE, mdi_comm);
+    }
+    else if ( strcmp(command, "<KE") == 0 ) {
+      ret = MDI_Recv(eksum, n, MDI_DOUBLE, mdi_comm);
+    }
+    else if ( strcmp(command, "<ENERGY") == 0 ) {
+      double energy[n];
+      for (int i=0; i<n ; i++)  energy[i]= esum[i] + eksum [i];
+      ret = MDI_Recv(energy, n, MDI_DOUBLE, mdi_comm);
+    }
     else if ( strcmp(command, "@INIT_MD") == 0 ) {
       break;
     }
@@ -116,6 +169,7 @@ void MDIEngine::run_mdi(const char* node)
       target_node = 2;
       break;
     }
+    
     else {
       TINKER_THROW(format("MDI  --  Received unsupported command: %s\n",
          command));
